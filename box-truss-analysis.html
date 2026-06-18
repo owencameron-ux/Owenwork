@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Frame — 120 × 200 × 80 cm — Isometric &amp; Truss Analysis</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Courier New', Courier, monospace;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 18px;
+    color: #e6edf3;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+  .disclaimer {
+    font-size: 13px;
+    color: #f4a261;
+    background: #1a1500;
+    border: 1px solid #f4a261;
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin-bottom: 18px;
+    display: inline-block;
+  }
+  .drawings-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+  }
+  .drawing-panel {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 10px;
+    flex: 0 0 auto;
+  }
+  .drawing-title {
+    font-size: 12px;
+    color: #8b949e;
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .analysis-panel {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 4px;
+  }
+  .analysis-title {
+    font-size: 15px;
+    color: #e6edf3;
+    margin-bottom: 14px;
+    letter-spacing: 0.5px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  th {
+    background: #21262d;
+    color: #8b949e;
+    padding: 8px 10px;
+    text-align: left;
+    border: 1px solid #30363d;
+    font-weight: normal;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+  }
+  td {
+    padding: 7px 10px;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    vertical-align: middle;
+  }
+  tr:nth-child(even) td { background: #0d1117; }
+  tr:nth-child(odd) td { background: #161b22; }
+  .tc-tension { color: #3fb950; font-weight: bold; }
+  .tc-compression { color: #f85149; font-weight: bold; }
+  .tc-zero { color: #8b949e; }
+  .notes {
+    margin-top: 16px;
+    font-size: 13px;
+    color: #8b949e;
+    line-height: 1.7;
+  }
+  .notes p { margin-bottom: 4px; }
+  .notes p::before { content: "• "; }
+</style>
+</head>
+<body>
+
+<h1>Box Frame — 120 × 200 × [80 cm assumed] — Isometric &amp; Truss Analysis</h1>
+<div class="disclaimer">⚠ Depth D = 80 cm assumed — please confirm. Analysis uses simplified pin-jointed truss model.</div>
+
+<div class="drawings-row">
+
+  <!-- DRAWING 1: Isometric 3D View -->
+  <div class="drawing-panel">
+    <div class="drawing-title">Isometric 3D View</div>
+    <svg width="420" height="560" viewBox="0 0 420 560" style="display:block;background:#0d1117;">
+
+      <!-- Hidden edges -->
+      <line x1="150" y1="340" x2="46" y2="400" stroke="#30363d" stroke-dasharray="4,3" stroke-width="1.5"/>
+      <line x1="46" y1="400" x2="46" y2="100" stroke="#30363d" stroke-dasharray="4,3" stroke-width="1.5"/>
+      <line x1="46" y1="400" x2="202" y2="490" stroke="#30363d" stroke-dasharray="4,3" stroke-width="1.5"/>
+
+      <!-- Right face polygon B-C-G-F -->
+      <polygon points="306,430 306,130 202,190 202,490" fill="#1a2030" stroke="#4a9eda" stroke-width="1.5"/>
+
+      <!-- Top face polygon D-C-G-H -->
+      <polygon points="150,40 306,130 202,190 46,100" fill="#1a2535" stroke="#4a9eda" stroke-width="1.5"/>
+
+      <!-- Front face octagon (z=0 face) -->
+      <polygon points="178,56 278,114 306,162 306,377 260,404 196,367 150,287 150,72"
+               fill="#0d1a2a" stroke="#4a9eda" stroke-width="1.5"/>
+
+      <!-- Front face brace diagonals -->
+      <line x1="150" y1="287" x2="196" y2="367" stroke="#f4a261" stroke-width="2"/>
+      <line x1="260" y1="404" x2="306" y2="377" stroke="#f4a261" stroke-width="2"/>
+      <line x1="150" y1="72" x2="178" y2="56" stroke="#f4a261" stroke-width="2"/>
+      <line x1="278" y1="114" x2="306" y2="162" stroke="#f4a261" stroke-width="2"/>
+
+      <!-- Top diagonal truss D→G -->
+      <line x1="150" y1="40" x2="202" y2="190" stroke="#f85149" stroke-width="2.5"/>
+
+      <!-- Vertical edges -->
+      <line x1="150" y1="340" x2="150" y2="72" stroke="#4a9eda" stroke-width="2"/>
+      <line x1="306" y1="430" x2="306" y2="162" stroke="#4a9eda" stroke-width="2"/>
+      <line x1="202" y1="190" x2="202" y2="490" stroke="#4a9eda" stroke-width="2"/>
+      <line x1="46" y1="100" x2="46" y2="400" stroke="#30363d" stroke-dasharray="4,3" stroke-width="1.5"/>
+
+      <!-- Bottom and outer frame edges -->
+      <line x1="150" y1="340" x2="306" y2="430" stroke="#4a9eda" stroke-width="1.5"/>
+      <line x1="306" y1="430" x2="202" y2="490" stroke="#4a9eda" stroke-width="1.5"/>
+
+      <!-- Top frame edges -->
+      <line x1="150" y1="40" x2="306" y2="130" stroke="#4a9eda" stroke-width="1.5"/>
+      <line x1="306" y1="130" x2="202" y2="190" stroke="#4a9eda" stroke-width="1.5"/>
+      <line x1="202" y1="190" x2="46" y2="100" stroke="#4a9eda" stroke-width="1.5"/>
+      <line x1="46" y1="100" x2="150" y2="40" stroke="#4a9eda" stroke-width="1.5"/>
+
+      <!-- Dimension labels -->
+      <text x="228" y="415" fill="#8b949e" font-size="11" font-family="'Courier New',monospace">W=120</text>
+      <text x="128" y="196" fill="#8b949e" font-size="11" font-family="'Courier New',monospace" transform="rotate(-90,128,196)">H=200</text>
+      <text x="100" y="58" fill="#8b949e" font-size="11" font-family="'Courier New',monospace">D=80*</text>
+
+      <!-- Node dots -->
+      <circle cx="150" cy="340" r="3" fill="#4a9eda"/>
+      <circle cx="306" cy="430" r="3" fill="#4a9eda"/>
+      <circle cx="306" cy="130" r="3" fill="#4a9eda"/>
+      <circle cx="150" cy="40" r="3" fill="#4a9eda"/>
+      <circle cx="46" cy="400" r="3" fill="#30363d" stroke="#4a9eda" stroke-width="1"/>
+      <circle cx="202" cy="490" r="3" fill="#4a9eda"/>
+      <circle cx="202" cy="190" r="3" fill="#4a9eda"/>
+      <circle cx="46" cy="100" r="3" fill="#30363d" stroke="#4a9eda" stroke-width="1"/>
+
+      <!-- Node labels -->
+      <text x="155" y="352" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">A</text>
+      <text x="311" y="442" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">B</text>
+      <text x="311" y="128" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">C</text>
+      <text x="138" y="38" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">D</text>
+      <text x="32" y="412" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">E</text>
+      <text x="207" y="503" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">F</text>
+      <text x="207" y="188" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">G</text>
+      <text x="32" y="98" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">H</text>
+
+      <!-- Legend -->
+      <text x="10" y="530" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">— structure</text>
+      <line x1="68" y1="527" x2="88" y2="527" stroke="#4a9eda" stroke-width="1.5"/>
+      <text x="92" y="530" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">braces</text>
+      <line x1="130" y1="527" x2="150" y2="527" stroke="#f4a261" stroke-width="1.5"/>
+      <text x="154" y="530" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">top diag</text>
+      <line x1="205" y1="527" x2="225" y2="527" stroke="#f85149" stroke-width="1.5"/>
+
+    </svg>
+  </div>
+
+  <!-- DRAWING 2: Front Face 2D Elevation -->
+  <div class="drawing-panel">
+    <div class="drawing-title">Front Face — 2D Elevation (z=0)</div>
+    <svg width="390" height="610" viewBox="0 0 390 610" style="display:block;background:#0d1117;">
+
+      <!-- Ghost full rectangle -->
+      <rect x="30" y="70" width="300" height="500" stroke="#30363d" stroke-dasharray="4,3" fill="none" stroke-width="1"/>
+
+      <!-- Octagon polygon -->
+      <polygon points="30,122.5 82.5,70 277.5,70 330,122.5 330,482.5 242.5,570 117.5,570 30,482.5"
+               fill="#0d1a2a" stroke="#4a9eda" stroke-width="2"/>
+
+      <!-- Brace diagonal lines -->
+      <line x1="30" y1="482.5" x2="117.5" y2="570" stroke="#f4a261" stroke-width="2.5"/>
+      <line x1="242.5" y1="570" x2="330" y2="482.5" stroke="#f4a261" stroke-width="2.5"/>
+      <line x1="30" y1="122.5" x2="82.5" y2="70" stroke="#f4a261" stroke-width="2.5"/>
+      <line x1="277.5" y1="70" x2="330" y2="122.5" stroke="#f4a261" stroke-width="2.5"/>
+
+      <!-- Support symbols at bottom -->
+      <polygon points="30,570 20,592 40,592" fill="#f4a261"/>
+      <polygon points="330,570 320,592 340,592" fill="#f4a261"/>
+      <!-- Ground hatch lines -->
+      <line x1="10" y1="594" x2="50" y2="594" stroke="#f4a261" stroke-width="1"/>
+      <line x1="310" y1="594" x2="350" y2="594" stroke="#f4a261" stroke-width="1"/>
+      <line x1="14" y1="598" x2="46" y2="598" stroke="#f4a261" stroke-width="1" opacity="0.5"/>
+      <line x1="314" y1="598" x2="346" y2="598" stroke="#f4a261" stroke-width="1" opacity="0.5"/>
+      <line x1="18" y1="602" x2="42" y2="602" stroke="#f4a261" stroke-width="1" opacity="0.3"/>
+      <line x1="318" y1="602" x2="342" y2="602" stroke="#f4a261" stroke-width="1" opacity="0.3"/>
+
+      <!-- Node dots at octagon corners -->
+      <circle cx="30" cy="122.5" r="4" fill="#4a9eda"/>
+      <circle cx="82.5" cy="70" r="4" fill="#4a9eda"/>
+      <circle cx="277.5" cy="70" r="4" fill="#4a9eda"/>
+      <circle cx="330" cy="122.5" r="4" fill="#4a9eda"/>
+      <circle cx="330" cy="482.5" r="4" fill="#4a9eda"/>
+      <circle cx="242.5" cy="570" r="4" fill="#4a9eda"/>
+      <circle cx="117.5" cy="570" r="4" fill="#4a9eda"/>
+      <circle cx="30" cy="482.5" r="4" fill="#4a9eda"/>
+
+      <!-- Dimension: Width at bottom -->
+      <!-- Width arrow line -->
+      <line x1="30" y1="585" x2="330" y2="585" stroke="#8b949e" stroke-width="1" marker-start="url(#arrowL)" marker-end="url(#arrowR)"/>
+      <text x="180" y="608" fill="#8b949e" font-size="11" font-family="'Courier New',monospace" text-anchor="middle">W = 120 cm</text>
+
+      <!-- Height label on left -->
+      <text x="12" y="320" fill="#8b949e" font-size="11" font-family="'Courier New',monospace"
+            transform="rotate(-90,12,320)" text-anchor="middle">H = 200 cm</text>
+      <line x1="22" y1="70" x2="22" y2="570" stroke="#8b949e" stroke-width="1"/>
+
+      <!-- Brace labels -->
+      <text x="55" y="540" fill="#f4a261" font-size="10" font-family="'Courier New',monospace"
+            transform="rotate(49,55,540)">50 cm</text>
+      <text x="42" y="105" fill="#f4a261" font-size="10" font-family="'Courier New',monospace"
+            transform="rotate(-49,42,105)">30 cm</text>
+      <text x="52" y="502" fill="#8b949e" font-size="9" font-family="'Courier New',monospace"
+            transform="rotate(49,52,502)">≈35 cm</text>
+      <text x="42" y="130" fill="#8b949e" font-size="9" font-family="'Courier New',monospace"
+            transform="rotate(-49,42,130)">≈21 cm</text>
+
+      <!-- Corner node labels -->
+      <text x="5" y="68" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">D</text>
+      <text x="335" y="68" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">C</text>
+      <text x="5" y="574" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">A</text>
+      <text x="335" y="574" fill="#8b949e" font-size="9" font-family="'Courier New',monospace">B</text>
+
+    </svg>
+  </div>
+
+  <!-- DRAWING 3: Top Plan View -->
+  <div class="drawing-panel">
+    <div class="drawing-title">Top Plan View (y=200 face)</div>
+    <svg width="390" height="290" viewBox="0 0 390 290" style="display:block;background:#0d1117;">
+
+      <!-- Plan rectangle D-C-G-H -->
+      <polygon points="30,230 330,230 330,30 30,30"
+               fill="#0d1a2a" stroke="#4a9eda" stroke-width="2"/>
+
+      <!-- Top diagonal D→G -->
+      <line x1="30" y1="230" x2="330" y2="30" stroke="#f85149" stroke-width="2.5"/>
+
+      <!-- Dimension: Width below rectangle -->
+      <line x1="30" y1="248" x2="330" y2="248" stroke="#8b949e" stroke-width="1"/>
+      <text x="180" y="264" fill="#8b949e" font-size="11" font-family="'Courier New',monospace" text-anchor="middle">W = 120 cm</text>
+
+      <!-- Dimension: Depth on right side -->
+      <text x="370" y="135" fill="#8b949e" font-size="11" font-family="'Courier New',monospace"
+            transform="rotate(90,370,135)" text-anchor="middle">D = 80 cm (assumed)</text>
+      <line x1="348" y1="30" x2="348" y2="230" stroke="#8b949e" stroke-width="1"/>
+
+      <!-- Diagonal label -->
+      <text x="185" y="118" fill="#f85149" font-size="11" font-family="'Courier New',monospace"
+            transform="rotate(-34,185,118)" text-anchor="middle">144.2 cm</text>
+
+      <!-- Angle label near D -->
+      <text x="55" y="215" fill="#8b949e" font-size="10" font-family="'Courier New',monospace">33.7°</text>
+      <!-- Small arc to show angle -->
+      <path d="M 30,210 A 20,20 0 0,1 50,230" fill="none" stroke="#8b949e" stroke-width="1"/>
+
+      <!-- Node dots -->
+      <circle cx="30" cy="230" r="4" fill="#4a9eda"/>
+      <circle cx="330" cy="230" r="4" fill="#4a9eda"/>
+      <circle cx="330" cy="30" r="4" fill="#4a9eda"/>
+      <circle cx="30" cy="30" r="4" fill="#4a9eda"/>
+
+      <!-- Column support indicators (filled squares) -->
+      <rect x="24" y="224" width="12" height="12" fill="none" stroke="#f4a261" stroke-width="1.5"/>
+      <rect x="324" y="224" width="12" height="12" fill="none" stroke="#f4a261" stroke-width="1.5"/>
+      <rect x="324" y="24" width="12" height="12" fill="none" stroke="#f4a261" stroke-width="1.5"/>
+      <rect x="24" y="24" width="12" height="12" fill="none" stroke="#f4a261" stroke-width="1.5"/>
+
+      <!-- Node labels -->
+      <text x="14" y="244" fill="#8b949e" font-size="10" font-family="'Courier New',monospace">D</text>
+      <text x="335" y="244" fill="#8b949e" font-size="10" font-family="'Courier New',monospace">C</text>
+      <text x="335" y="26" fill="#8b949e" font-size="10" font-family="'Courier New',monospace">G</text>
+      <text x="14" y="26" fill="#8b949e" font-size="10" font-family="'Courier New',monospace">H</text>
+
+      <!-- Front/Back labels -->
+      <text x="180" y="244" fill="#30363d" font-size="9" font-family="'Courier New',monospace" text-anchor="middle">← FRONT (z=0) →</text>
+      <text x="180" y="22" fill="#30363d" font-size="9" font-family="'Courier New',monospace" text-anchor="middle">← BACK (z=80) →</text>
+
+    </svg>
+  </div>
+
+</div><!-- end drawings-row -->
+
+<!-- ANALYSIS TABLE -->
+<div class="analysis-panel">
+  <div class="analysis-title">Simplified Truss Analysis</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Member</th>
+        <th>Length</th>
+        <th>Count</th>
+        <th>Force Pv=10kN</th>
+        <th>Force Ph=2kN</th>
+        <th>Force Pz=2kN</th>
+        <th>T/C</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Vertical corner columns</td>
+        <td>200 cm</td>
+        <td>×4</td>
+        <td>−2.5 kN (C)</td>
+        <td>±3.33 kN</td>
+        <td>±1.67 kN</td>
+        <td class="tc-compression">C</td>
+        <td>Primary axial members</td>
+      </tr>
+      <tr>
+        <td>Bottom horiz chord</td>
+        <td>120 cm</td>
+        <td>×2</td>
+        <td>0</td>
+        <td>+1.0 kN (T)</td>
+        <td>0</td>
+        <td class="tc-tension">T</td>
+        <td>Base tie, resists spread</td>
+      </tr>
+      <tr>
+        <td>Depth horiz chord</td>
+        <td>80 cm</td>
+        <td>×2</td>
+        <td>0</td>
+        <td>0</td>
+        <td>+1.0 kN (T)</td>
+        <td class="tc-tension">T</td>
+        <td>Depth tie</td>
+      </tr>
+      <tr>
+        <td>Top chord members</td>
+        <td>120/80 cm</td>
+        <td>×4</td>
+        <td>0</td>
+        <td>varies</td>
+        <td>0</td>
+        <td class="tc-zero">—</td>
+        <td>Top frame perimeter</td>
+      </tr>
+      <tr>
+        <td>Bot corner braces 50cm@45°</td>
+        <td>50 cm</td>
+        <td>×8</td>
+        <td>~0.35 kN</td>
+        <td>1.41 kN (C)</td>
+        <td>0</td>
+        <td class="tc-compression">C</td>
+        <td>Knee brace, stiffens base corner</td>
+      </tr>
+      <tr>
+        <td>Top corner braces 30cm@45°</td>
+        <td>30 cm</td>
+        <td>×8</td>
+        <td>~0.2 kN</td>
+        <td>0.85 kN (T)</td>
+        <td>0</td>
+        <td class="tc-tension">T</td>
+        <td>Knee brace, stiffens top corner</td>
+      </tr>
+      <tr>
+        <td>Top diagonal truss</td>
+        <td>144.2 cm</td>
+        <td>×1</td>
+        <td>0</td>
+        <td>0</td>
+        <td>3.61 kN</td>
+        <td class="tc-zero">T or C</td>
+        <td>Primary lateral bracing in depth direction</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="notes">
+    <p>Positive = tension (T), negative = compression (C)</p>
+    <p>Pv = 10 kN vertical load distributed equally to 4 columns → 2.5 kN each (compression)</p>
+    <p>Ph = 2 kN lateral (in-plane with front/back faces) → activates corner braces for racking resistance</p>
+    <p>Pz = 2 kN lateral (perpendicular to front face, along depth) → resisted primarily by top diagonal; force = Pz/sin(33.7°) = 3.61 kN</p>
+    <p>Top diagonal only resists load in its plane — side faces have no diagonal bracing (consider adding diagonals if Pz loads are significant)</p>
+    <p>D = 80 cm assumed — user should confirm actual depth</p>
+  </div>
+</div>
+
+</body>
+</html>
