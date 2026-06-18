@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Rectangle with Corner Supports</title>
+<style>
+  body { background: #1a1a2e; display: flex; justify-content: center; align-items: flex-start; padding: 40px; font-family: monospace; color: #e0e0e0; gap: 40px; flex-wrap: wrap; }
+  .panel { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  h2 { margin: 0; color: #a0c4ff; font-size: 14px; text-align: center; }
+  svg { background: #0d1117; border-radius: 8px; }
+  .label { font-size: 11px; fill: #aaa; }
+  .dim-line { stroke: #555; stroke-width: 0.5; stroke-dasharray: 4,3; }
+  .dim-text { font-size: 10px; fill: #888; font-family: monospace; }
+  .support-line { stroke: #f4a261; stroke-width: 2.5; stroke-linecap: round; }
+  .rect-face { fill: #1c3d5a; stroke: #4a9eda; stroke-width: 1.5; }
+  .brace-area { fill: rgba(244,162,97,0.12); }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <h2>Front Face — 120 × 200 cm<br>with diagonal corner supports</h2>
+
+  <svg id="viz" width="520" height="720" viewBox="-90 -60 520 720">
+    <defs>
+      <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#666"/>
+      </marker>
+      <marker id="arr2" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto-start-reverse">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#666"/>
+      </marker>
+    </defs>
+
+    <!--
+      Scale: 1cm = 2.8px
+      rect: 120 × 200 cm → 336 × 560px
+
+      Bottom corners: 50cm diagonal at 45° → each leg = 50/√2 ≈ 35.36cm → 99px
+      Top corners:    30cm diagonal at 45° → each leg = 30/√2 ≈ 21.21cm → 59px
+    -->
+
+    <!-- ===== FULL RECTANGLE (ghost) ===== -->
+    <rect x="0" y="0" width="336" height="560" fill="none" stroke="#2a4a6a" stroke-width="1" stroke-dasharray="6,4"/>
+
+    <!-- ===== BRACE TRIANGLES (shaded areas) ===== -->
+    <!-- Bottom-left brace -->
+    <polygon points="0,560 99,560 0,461" class="brace-area"/>
+    <!-- Bottom-right brace -->
+    <polygon points="336,560 237,560 336,461" class="brace-area"/>
+    <!-- Top-left brace -->
+    <polygon points="0,0 59,0 0,59" class="brace-area"/>
+    <!-- Top-right brace -->
+    <polygon points="336,0 277,0 336,59" class="brace-area"/>
+
+    <!-- ===== MAIN SHAPE (with diagonal corners) ===== -->
+    <polygon class="rect-face"
+      points="
+        59,0
+        277,0
+        336,59
+        336,461
+        237,560
+        99,560
+        0,461
+        0,59
+      "
+    />
+
+    <!-- ===== DIAGONAL SUPPORT LINES (highlighted) ===== -->
+    <!-- Bottom-left -->
+    <line x1="0" y1="461" x2="99" y2="560" class="support-line"/>
+    <!-- Bottom-right -->
+    <line x1="336" y1="461" x2="237" y2="560" class="support-line"/>
+    <!-- Top-left -->
+    <line x1="0" y1="59" x2="59" y2="0" class="support-line"/>
+    <!-- Top-right -->
+    <line x1="336" y1="59" x2="277" y2="0" class="support-line"/>
+
+    <!-- ===== DIMENSION: width (120cm) ===== -->
+    <line x1="0" y1="610" x2="336" y2="610" stroke="#666" stroke-width="0.8" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+    <line x1="0" y1="600" x2="0" y2="620" stroke="#555" stroke-width="0.8"/>
+    <line x1="336" y1="600" x2="336" y2="620" stroke="#555" stroke-width="0.8"/>
+    <text x="168" y="628" text-anchor="middle" class="dim-text">120 cm</text>
+
+    <!-- ===== DIMENSION: height (200cm) ===== -->
+    <line x1="-40" y1="0" x2="-40" y2="560" stroke="#666" stroke-width="0.8" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+    <line x1="-50" y1="0" x2="-30" y2="0" stroke="#555" stroke-width="0.8"/>
+    <line x1="-50" y1="560" x2="-30" y2="560" stroke="#555" stroke-width="0.8"/>
+    <text x="-55" y="283" text-anchor="middle" class="dim-text" transform="rotate(-90,-55,283)">200 cm</text>
+
+    <!-- ===== DIMENSION: bottom brace leg horizontal ===== -->
+    <line x1="0" y1="575" x2="99" y2="575" stroke="#f4a261" stroke-width="0.7" stroke-dasharray="3,2" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+    <text x="49" y="591" text-anchor="middle" fill="#f4a261" font-size="9" font-family="monospace">≈35 cm</text>
+
+    <!-- ===== DIMENSION: bottom brace leg vertical ===== -->
+    <line x1="-18" y1="461" x2="-18" y2="560" stroke="#f4a261" stroke-width="0.7" stroke-dasharray="3,2" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+    <text x="-20" y="514" text-anchor="end" fill="#f4a261" font-size="9" font-family="monospace">≈35 cm</text>
+
+    <!-- ===== LABEL: bottom brace length ===== -->
+    <text x="40" y="530" fill="#f4a261" font-size="10" font-family="monospace" transform="rotate(-45,40,530)">50 cm @ 45°</text>
+
+    <!-- ===== LABEL: top brace length ===== -->
+    <text x="6" y="42" fill="#f4a261" font-size="10" font-family="monospace" transform="rotate(-45,6,42)">30 cm @ 45°</text>
+
+    <!-- ===== DIMENSION: top brace leg ===== -->
+    <line x1="0" y1="-18" x2="59" y2="-18" stroke="#f4a261" stroke-width="0.7" stroke-dasharray="3,2" marker-end="url(#arr)" marker-start="url(#arr2)"/>
+    <text x="29" y="-7" text-anchor="middle" fill="#f4a261" font-size="9" font-family="monospace">≈21 cm</text>
+
+    <!-- ===== CORNER DOTS ===== -->
+    <circle cx="0" cy="461" r="3" fill="#f4a261"/>
+    <circle cx="99" cy="560" r="3" fill="#f4a261"/>
+    <circle cx="336" cy="461" r="3" fill="#f4a261"/>
+    <circle cx="237" cy="560" r="3" fill="#f4a261"/>
+    <circle cx="0" cy="59" r="3" fill="#f4a261"/>
+    <circle cx="59" cy="0" r="3" fill="#f4a261"/>
+    <circle cx="336" cy="59" r="3" fill="#f4a261"/>
+    <circle cx="277" cy="0" r="3" fill="#f4a261"/>
+
+  </svg>
+
+  <div style="font-size:12px; color:#888; max-width:380px; text-align:center; line-height:1.6;">
+    <span style="color:#4a9eda">■</span> Main face &nbsp;|&nbsp;
+    <span style="color:#f4a261">■</span> Diagonal supports (45°) &nbsp;|&nbsp;
+    <span style="color:#2a4a6a">- -</span> Full rect outline<br>
+    Bottom leg: 50 ÷ √2 ≈ 35.4 cm each side &nbsp;|&nbsp; Top leg: 30 ÷ √2 ≈ 21.2 cm each side
+  </div>
+</div>
+
+</body>
+</html>
