@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Goon Rater — Find Your Prime Bag</title>
+  <style>
+    :root {
+      --bg: #0d0d0f;
+      --surface: #16161a;
+      --surface2: #1e1e24;
+      --border: #2a2a34;
+      --red-wine: #8b1a2e;
+      --red-glow: #c0392b;
+      --white-wine: #c9a84c;
+      --white-glow: #f0c060;
+      --accent: #7c3aed;
+      --accent-light: #a78bfa;
+      --text: #e8e8f0;
+      --muted: #6b6b80;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a0a1e 0%, #0d0d0f 60%, #1a0a10 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 40px 24px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,58,237,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-bag {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 0 20px rgba(192,57,43,0.6));
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #c0392b 0%, #a78bfa 50%, #f0c060 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 36px 0 14px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+    }
+
+    /* ── Wine type toggle ── */
+    .type-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 14px 10px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .type-btn:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .type-btn.active-red {
+      border-color: var(--red-wine);
+      background: rgba(139,26,46,0.15);
+      color: #e07080;
+      box-shadow: 0 0 20px rgba(192,57,43,0.2);
+    }
+
+    .type-btn.active-white {
+      border-color: var(--white-wine);
+      background: rgba(201,168,76,0.12);
+      color: var(--white-glow);
+      box-shadow: 0 0 20px rgba(240,192,96,0.2);
+    }
+
+    /* ── Form fields ── */
+    .fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .fields { grid-template-columns: 1fr; }
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .field-hint {
+      font-size: 0.72rem;
+      color: #4a4a5a;
+      margin-top: -4px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap .unit {
+      position: absolute;
+      right: 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      pointer-events: none;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 40px 12px 14px;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    input:focus {
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+    }
+
+    .name-field input {
+      padding-right: 14px;
+    }
+
+    /* ── ABV hint bar ── */
+    .abv-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .abv-hint span {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .abv-hint .tag-red {
+      background: rgba(139,26,46,0.3);
+      color: #e07080;
+    }
+
+    .abv-hint .tag-white {
+      background: rgba(201,168,76,0.2);
+      color: var(--white-glow);
+    }
+
+    /* ── Add button ── */
+    .btn-add {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+      letter-spacing: 0.02em;
+    }
+
+    .btn-add:hover {
+      opacity: 0.92;
+      box-shadow: 0 6px 28px rgba(124,58,237,0.5);
+    }
+
+    .btn-add:active { transform: scale(0.98); }
+
+    /* ── Results ── */
+    #results-section { display: none; }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .btn-clear {
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-clear:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* ── Bag card ── */
+    .bag-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bag-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .bag-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .bag-card.type-red {
+      border-left: 3px solid var(--red-wine);
+    }
+
+    .bag-card.type-red::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--red-wine), transparent);
+    }
+
+    .bag-card.type-white {
+      border-left: 3px solid var(--white-wine);
+    }
+
+    .bag-card.type-white::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--white-wine), transparent);
+    }
+
+    .bag-card.rank-1 {
+      border-color: #f0c060;
+      box-shadow: 0 0 30px rgba(240,192,96,0.12);
+    }
+
+    .bag-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .bag-name-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .bag-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .wine-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .badge-red {
+      background: rgba(139,26,46,0.3);
+      color: #e07080;
+      border: 1px solid rgba(139,26,46,0.5);
+    }
+
+    .badge-white {
+      background: rgba(201,168,76,0.15);
+      color: var(--white-glow);
+      border: 1px solid rgba(201,168,76,0.4);
+    }
+
+    .rank-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: rgba(240,192,96,0.15);
+      color: #f0c060;
+      border: 1px solid rgba(240,192,96,0.3);
+    }
+
+    /* ── Score display ── */
+    .score-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .score-ring {
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+
+    .score-ring svg {
+      width: 64px;
+      height: 64px;
+      transform: rotate(-90deg);
+    }
+
+    .score-ring .ring-bg {
+      fill: none;
+      stroke: var(--surface2);
+      stroke-width: 5;
+    }
+
+    .score-ring .ring-fill {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .score-center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .score-num {
+      font-size: 1.1rem;
+      font-weight: 800;
+    }
+
+    .score-denom {
+      font-size: 0.6rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .tier-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .tier-S { background: rgba(240,192,96,0.2); color: #f0c060; border: 1px solid rgba(240,192,96,0.4); }
+    .tier-A { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .tier-B { background: rgba(124,58,237,0.2); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+    .tier-C { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .tier-D { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+    /* ── Stats grid ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 580px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .stat {
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    /* ── Delete button ── */
+    .btn-delete {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      line-height: 1;
+    }
+
+    .btn-delete:hover {
+      background: rgba(239,68,68,0.15);
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+
+    /* ── Winner banner ── */
+    .winner-banner {
+      background: linear-gradient(135deg, rgba(240,192,96,0.1) 0%, rgba(124,58,237,0.1) 100%);
+      border: 1px solid rgba(240,192,96,0.3);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .winner-icon { font-size: 2rem; }
+
+    .winner-text h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #f0c060;
+      margin-bottom: 2px;
+    }
+
+    .winner-text p {
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    /* ── Info note ── */
+    .info-note {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .info-note strong { color: var(--accent-light); }
+
+    /* ── Error ── */
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.82rem;
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: rgba(239,68,68,0.08);
+      border-radius: 8px;
+      border: 1px solid rgba(239,68,68,0.2);
+      display: none;
+    }
+
+    /* ── ABV slider visual ── */
+    .abv-range-bar {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--surface2);
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .abv-range-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="header-bag">🍷</span>
+  <h1>Goon Rater</h1>
+  <p>Find the most optimal bag for your dollar. Enter price, volume, and ABV — we'll do the maths.</p>
+</header>
+
+<div class="container">
+
+  <p class="section-title">Add a Goon Bag</p>
+  <div class="card">
+
+    <!-- Wine type toggle -->
+    <div class="type-toggle">
+      <button class="type-btn active-red" id="btn-red" onclick="setType('red')">
+        🍷 Red Wine
+      </button>
+      <button class="type-btn" id="btn-white" onclick="setType('white')">
+        🥂 White Wine
+      </button>
+    </div>
+
+    <!-- Name field -->
+    <div class="field name-field" style="margin-bottom:16px;">
+      <label>Brand / Name <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+      <div class="input-wrap">
+        <input type="text" id="f-name" placeholder="e.g. Fruity Lexia, Coolabah Dry Red…" style="padding-right:14px" />
+      </div>
+    </div>
+
+    <div class="fields">
+      <!-- Price -->
+      <div class="field">
+        <label>Price</label>
+        <div class="input-wrap">
+          <input type="number" id="f-price" placeholder="12.00" min="0.01" step="0.01" />
+          <span class="unit">$</span>
+        </div>
+        <span class="field-hint">What you paid at the servo or bottle-o</span>
+      </div>
+
+      <!-- Volume -->
+      <div class="field">
+        <label>Volume</label>
+        <div class="input-wrap">
+          <input type="number" id="f-volume" placeholder="4.0" min="0.1" step="0.1" />
+          <span class="unit">L</span>
+        </div>
+        <span class="field-hint">Common: 2L, 3L, 4L, 5L</span>
+      </div>
+
+      <!-- ABV -->
+      <div class="field">
+        <label>Alcohol %</label>
+        <div class="input-wrap">
+          <input type="number" id="f-abv" placeholder="9.5" min="1" max="25" step="0.1" oninput="updateAbvBar()" />
+          <span class="unit">%</span>
+        </div>
+        <div id="abv-hint" class="abv-hint"></div>
+        <div class="abv-range-bar"><div class="abv-range-fill" id="abv-bar"></div></div>
+      </div>
+    </div>
+
+    <div id="error-msg" class="error-msg"></div>
+
+    <button class="btn-add" onclick="addBag()">+ Rate This Bag</button>
+  </div>
+
+  <!-- Info note -->
+  <div class="info-note">
+    <strong>How scoring works:</strong> We calculate <strong>standard drinks per dollar</strong> (1 Aus. standard drink = 10g pure alcohol).
+    The score is weighted against real-world goon benchmarks — a solid 4L red at ~13% for $12 sits around <strong>8/10</strong>.
+    Red and white wines are scored against their own typical ABV ranges so a 9% white isn't punished for being a white.
+  </div>
+
+  <!-- Results -->
+  <div id="results-section">
+    <div class="results-header">
+      <p class="section-title" style="margin:36px 0 0">Your Bags</p>
+      <button class="btn-clear" onclick="clearAll()">Clear all</button>
+    </div>
+    <div id="winner-wrap"></div>
+    <div class="bag-list" id="bag-list"></div>
+  </div>
+
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let currentType = 'red';
+  let bags = [];
+  let nextId = 1;
+
+  // Typical ABV ranges (Australian cask wine data)
+  const WINE_INFO = {
+    red:   { min: 11.5, mid: 13.0, max: 15.0, label: 'Red',   emoji: '🍷', benchmark: 3.0 },
+    white: { min: 8.5,  mid: 10.5, max: 13.5, label: 'White', emoji: '🥂', benchmark: 2.6 },
+  };
+
+  // ── Wine type selection ────────────────────────────────────────────────────
+  function setType(type) {
+    currentType = type;
+    document.getElementById('btn-red').className   = 'type-btn' + (type === 'red'   ? ' active-red'   : '');
+    document.getElementById('btn-white').className = 'type-btn' + (type === 'white' ? ' active-white' : '');
+    updateAbvHint();
+    updateAbvBar();
+    document.getElementById('f-abv').placeholder = WINE_INFO[type].mid.toFixed(1);
+  }
+
+  function updateAbvHint() {
+    const info = WINE_INFO[currentType];
+    const el = document.getElementById('abv-hint');
+    const tag = currentType === 'red'
+      ? `<span class="tag-red">Red ${info.min}–${info.max}%</span>`
+      : `<span class="tag-white">White ${info.min}–${info.max}%</span>`;
+    el.innerHTML = `Typical range: ${tag}`;
+  }
+
+  function updateAbvBar() {
+    const val = parseFloat(document.getElementById('f-abv').value) || 0;
+    const info = WINE_INFO[currentType];
+    const pct  = Math.min(100, Math.max(0, ((val - info.min) / (info.max - info.min)) * 100));
+    const bar  = document.getElementById('abv-bar');
+    bar.style.width = pct + '%';
+    bar.style.background = currentType === 'red'
+      ? `linear-gradient(90deg, #6b0f1a, #c0392b)`
+      : `linear-gradient(90deg, #a07830, #f0c060)`;
+  }
+
+  // ── Scoring ────────────────────────────────────────────────────────────────
+  // Australian standard drink = 10g of ethanol
+  // Ethanol density ≈ 0.789 g/mL
+  function calcStandardDrinks(volumeL, abvPct) {
+    return (volumeL * 1000 * (abvPct / 100) * 0.789) / 10;
+  }
+
+  function scoreFromSDperDollar(sdPerDollar, type) {
+    // Benchmark: what a "good" goon looks like for each type
+    // Red:   benchmark ~3.0 SD/$   (e.g. 4L 13% for $13.80)
+    // White: benchmark ~2.6 SD/$   (e.g. 4L 9.5% for $12)
+    const bench = WINE_INFO[type].benchmark;
+    // Score scales: 0→0, bench*0.5→3, bench→7, bench*1.2→9, bench*1.5→10
+    const ratio = sdPerDollar / bench;
+    let score;
+    if (ratio <= 0)    score = 0;
+    else if (ratio <= 0.5) score = ratio / 0.5 * 3;
+    else if (ratio <= 1.0) score = 3 + ((ratio - 0.5) / 0.5) * 4;
+    else if (ratio <= 1.2) score = 7 + ((ratio - 1.0) / 0.2) * 2;
+    else                   score = Math.min(10, 9 + ((ratio - 1.2) / 0.3));
+    return Math.round(Math.min(10, Math.max(0, score)) * 10) / 10;
+  }
+
+  function getTier(score) {
+    if (score >= 9)   return { tier: 'S', label: 'Goon God',   class: 'tier-S' };
+    if (score >= 7.5) return { tier: 'A', label: 'Prime Bag',  class: 'tier-A' };
+    if (score >= 6)   return { tier: 'B', label: 'Solid Goon', class: 'tier-B' };
+    if (score >= 4)   return { tier: 'C', label: 'Passable',   class: 'tier-C' };
+    return              { tier: 'D', label: 'Trash Tier',       class: 'tier-D' };
+  }
+
+  function getScoreColor(score) {
+    if (score >= 9)   return '#f0c060';
+    if (score >= 7.5) return '#4ade80';
+    if (score >= 6)   return '#a78bfa';
+    if (score >= 4)   return '#fbbf24';
+    return '#f87171';
+  }
+
+  // ── Add bag ────────────────────────────────────────────────────────────────
+  function addBag() {
+    const name   = document.getElementById('f-name').value.trim();
+    const price  = parseFloat(document.getElementById('f-price').value);
+    const volume = parseFloat(document.getElementById('f-volume').value);
+    const abv    = parseFloat(document.getElementById('f-abv').value);
+    const errEl  = document.getElementById('error-msg');
+
+    errEl.style.display = 'none';
+
+    if (!price || price <= 0)          return showError('Enter a valid price.');
+    if (!volume || volume <= 0)        return showError('Enter a valid volume.');
+    if (!abv || abv < 1 || abv > 25)   return showError('Enter a valid ABV between 1% and 25%.');
+
+    const sd       = calcStandardDrinks(volume, abv);
+    const sdPerL   = sd / volume;
+    const sdPerDol = sd / price;
+    const costPerSD= price / sd;
+    const score    = scoreFromSDperDollar(sdPerDol, currentType);
+    const tier     = getTier(score);
+
+    bags.push({
+      id: nextId++,
+      name: name || `Bag #${bags.length + 1}`,
+      type: currentType,
+      price, volume, abv,
+      sd, sdPerL, sdPerDol, costPerSD, score, tier,
+    });
+
+    // Reset form
+    document.getElementById('f-name').value  = '';
+    document.getElementById('f-price').value = '';
+    document.getElementById('f-volume').value = '';
+    document.getElementById('f-abv').value   = '';
+    document.getElementById('abv-bar').style.width = '0';
+
+    renderResults();
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // ── Delete ─────────────────────────────────────────────────────────────────
+  function deleteBag(id) {
+    bags = bags.filter(b => b.id !== id);
+    renderResults();
+  }
+
+  function clearAll() {
+    bags = [];
+    renderResults();
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function renderResults() {
+    const section = document.getElementById('results-section');
+    const listEl  = document.getElementById('bag-list');
+    const winnerEl = document.getElementById('winner-wrap');
+
+    if (bags.length === 0) {
+      section.style.display = 'none';
+      return;
+    }
+
+    section.style.display = 'block';
+
+    // Sort by score descending
+    const sorted = [...bags].sort((a, b) => b.score - a.score);
+
+    // Winner banner (only if >1 bag)
+    if (bags.length > 1) {
+      const winner = sorted[0];
+      winnerEl.innerHTML = `
+        <div class="winner-banner">
+          <span class="winner-icon">🏆</span>
+          <div class="winner-text">
+            <h3>Best Value Pick</h3>
+            <p><strong>${escHtml(winner.name)}</strong> — ${winner.score}/10 · ${winner.tier.label}</p>
+          </div>
+        </div>`;
+    } else {
+      winnerEl.innerHTML = '';
+    }
+
+    // Render bag cards in score order
+    listEl.innerHTML = sorted.map((b, idx) => renderBagCard(b, idx + 1, bags.length)).join('');
+  }
+
+  function renderBagCard(b, rank, total) {
+    const color     = getScoreColor(b.score);
+    const circumf   = 2 * Math.PI * 27; // r=27
+    const dashOffset= circumf - (b.score / 10) * circumf;
+    const badgeClass = b.type === 'red' ? 'badge-red' : 'badge-white';
+    const rankBadge  = (total > 1 && rank === 1) ? `<span class="rank-badge">#1 Pick</span>` : '';
+
+    return `
+    <div class="bag-card type-${b.type}${rank === 1 && total > 1 ? ' rank-1' : ''}" id="bag-${b.id}">
+      <button class="btn-delete" onclick="deleteBag(${b.id})" title="Remove">✕</button>
+      <div class="bag-top">
+        <div>
+          <div class="bag-name-row">
+            <span class="bag-name">${escHtml(b.name)}</span>
+            <span class="wine-badge ${badgeClass}">${WINE_INFO[b.type].emoji} ${WINE_INFO[b.type].label}</span>
+            ${rankBadge}
+          </div>
+        </div>
+        <div class="score-block">
+          <div>
+            <div class="score-ring">
+              <svg viewBox="0 0 64 64">
+                <circle class="ring-bg" cx="32" cy="32" r="27"/>
+                <circle class="ring-fill"
+                  cx="32" cy="32" r="27"
+                  stroke="${color}"
+                  stroke-dasharray="${circumf}"
+                  stroke-dashoffset="${dashOffset}"
+                />
+              </svg>
+              <div class="score-center">
+                <span class="score-num" style="color:${color}">${b.score}</span>
+                <span class="score-denom">/10</span>
+              </div>
+            </div>
+          </div>
+          <span class="tier-label ${b.tier.class}">${b.tier.label}</span>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-label">Std. Drinks</div>
+          <div class="stat-value">${b.sd.toFixed(1)}</div>
+          <div class="stat-sub">${b.sdPerL.toFixed(1)} per litre</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Cost / Std. Drink</div>
+          <div class="stat-value">$${b.costPerSD.toFixed(2)}</div>
+          <div class="stat-sub">lower = better</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">SD per Dollar</div>
+          <div class="stat-value">${b.sdPerDol.toFixed(2)}</div>
+          <div class="stat-sub">higher = better</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Overview</div>
+          <div class="stat-value">${b.volume}L · ${b.abv}%</div>
+          <div class="stat-sub">$${b.price.toFixed(2)} total</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  updateAbvHint();
+  updateAbvBar();
+</script>
+</body>
+</html>
+```
